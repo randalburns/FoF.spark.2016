@@ -37,6 +37,35 @@ object FoF {
     val conf = new SparkConf().setAppName("FoF Spark")
     val sc = new SparkContext(conf)
 
-    val input = sc.textFile("./simple.input/*").flatMap(lineToTriples).map(x=>(x.toString,1)).reduceByKey(_+_).filter{ case (x,y) => y>1}.map{ case (x,y)=>x}.saveAsTextFile("./output")
+    val t0 = System.nanoTime()
+
+    val triples = sc.textFile("./simple.input/*").flatMap(lineToTriples)
+
+    // Same implementation as MR FoF
+    //  -- convert to ((a,b,c,),1)
+    //  -- sum triples count in reducer
+    //  -- take only those with 2 or more 
+//    triples.map(x=>(x.toString,1))
+//            .reduceByKey(_+_)
+//            .filter{ case (x,y) => y>1 }
+//            .map{ case (x,y)=>x }
+//            .saveAsTextFile("./output")
+
+    // Optimized implementation
+    //  -- convert to ((a,b,c,),partition)
+    //  -- ???
+    //  -- ???
+    //  -- take just the keys
+    //  -- output only unique keys
+    val ptriples = triples.mapPartitionsWithIndex((idx, it)=> it.map(x => (x.toString,idx.toString)))
+    ptriples.join(ptriples)
+            .filter{ case(k,(v1,v2)) => v1!=v2 }
+            .keys
+            .distinct
+            .saveAsTextFile("./output")
+
+    val t1 = System.nanoTime()
+    val timedata = Array ( t0, t1, t1-t0 )
+    sc.parallelize(timedata).saveAsTextFile("./time")
   }
 }
