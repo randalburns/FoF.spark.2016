@@ -39,7 +39,10 @@ object FoF {
 
     val t0 = System.nanoTime()
 
-    val triples = sc.textFile("./simple.input/*").flatMap(lineToTriples)
+// Small test input
+//    val triples = sc.textFile("./simple.input/*").flatMap(lineToTriples)
+// Big input
+    val triples = sc.textFile("./fof.input/*").flatMap(lineToTriples)
 
     // Same implementation as MR FoF
     //  -- convert to ((a,b,c,),1)
