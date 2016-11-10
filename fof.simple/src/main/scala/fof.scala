@@ -28,9 +28,8 @@ object FoF {
         outtriples.append((fj,fsecond,fthird))
       }
     }
-    return outtriples.toList//.map(x => (x,0))
+    return outtriples.toList
   }
-
 
   def main(args: Array[String]) {
 
@@ -40,31 +39,18 @@ object FoF {
     val t0 = System.nanoTime()
 
 // Small test input
-//    val triples = sc.textFile("./simple.input/*").flatMap(lineToTriples)
+//    val triples = sc.textFile("../simple.input/*").flatMap(lineToTriples)
 // Big input
-    val triples = sc.textFile("./fof.input/*").flatMap(lineToTriples)
+    val triples = sc.textFile("../fof.input/*").flatMap(lineToTriples)
 
     // Same implementation as MR FoF
     //  -- convert to ((a,b,c,),1)
     //  -- sum triples count in reducer
     //  -- take only those with 2 or more 
-//    triples.map(x=>(x.toString,1))
-//            .reduceByKey(_+_)
-//            .filter{ case (x,y) => y>1 }
-//            .map{ case (x,y)=>x }
-//            .saveAsTextFile("./output")
-
-    // Optimized implementation
-    //  -- convert to ((a,b,c,),partition)
-    //  -- ???
-    //  -- ???
-    //  -- take just the keys
-    //  -- output only unique keys
-    val ptriples = triples.mapPartitionsWithIndex((idx, it)=> it.map(x => (x.toString,idx.toString)))
-    ptriples.join(ptriples)
-            .filter{ case(k,(v1,v2)) => v1!=v2 }
-            .keys
-            .distinct
+    triples.map(x=>(x.toString,1))
+            .reduceByKey(_+_)
+            .filter{ case (x,y) => y>1 }
+            .map{ case (x,y)=>x }
             .saveAsTextFile("./output")
 
     val t1 = System.nanoTime()
