@@ -1,0 +1,6 @@
+
+To make this go:
+
+  docker build -t fof
+
+  docker run -i -t /bin/bash

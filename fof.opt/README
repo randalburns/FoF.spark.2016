@@ -1,0 +1,20 @@
+
+## build the code
+
+  sbt package
+
+
+## run the code
+
+  /usr/local/spark/spark-2.0.1-bin-hadoop2.7/bin/spark-submit --class "FoF" ./target/scala-2.11/fof-spark_2.11-1.0.jar
+
+## check the output
+
+  cat output/*
+  cat time/*
+
+## clean output for a new build
+
+  rm -rf output time
+
+  
